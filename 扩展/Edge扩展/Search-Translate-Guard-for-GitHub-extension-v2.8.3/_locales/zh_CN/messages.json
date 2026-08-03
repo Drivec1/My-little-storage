@@ -1,0 +1,183 @@
+{
+  "extensionName": {
+    "message": "GitHub 搜索翻译保护器"
+  },
+  "extensionDescription": {
+    "message": "防止网页翻译破坏 GitHub 搜索，并在用户授权的网站保护和修复开放式 Shadow DOM 或同源 iframe 中的高风险组件。"
+  },
+  "fallbackTitle": {
+    "message": "GitHub 搜索"
+  },
+  "fallbackNotice": {
+    "message": "原生搜索未能稳定打开，已自动切换到兼容搜索。"
+  },
+  "fallbackInputLabel": {
+    "message": "GitHub 搜索内容"
+  },
+  "searchButton": {
+    "message": "搜索"
+  },
+  "fallbackHint": {
+    "message": "按 Enter 搜索 · 按 Esc 关闭"
+  },
+  "fallbackLauncher": {
+    "message": "兼容搜索"
+  },
+  "siteGuardActionTitle": {
+    "message": "管理翻译保护"
+  },
+  "siteGuardTitle": {
+    "message": "网站保护"
+  },
+  "siteGuardBuiltInActive": {
+    "message": "GitHub 内置搜索保护已启用。"
+  },
+  "siteGuardEnable": {
+    "message": "为此网站启用"
+  },
+  "siteGuardSelect": {
+    "message": "查找或选择组件"
+  },
+  "siteGuardClear": {
+    "message": "清除组件规则"
+  },
+  "siteGuardDisable": {
+    "message": "对此网站停用"
+  },
+  "siteGuardReloadHint": {
+    "message": "启用保护或更改规则后，请重新加载页面。"
+  },
+  "siteGuardEnabled": {
+    "message": "用户选择的保护已启用。"
+  },
+  "siteGuardDisabled": {
+    "message": "用户选择的保护未启用。"
+  },
+  "siteGuardRuleCount": {
+    "message": "已保护 $COUNT$ 个组件规则",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "siteGuardFrameCount": {
+    "message": "保护已在 $COUNT$ 个同源框架中生效。",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "siteGuardTopFrame": {
+    "message": "顶层文档"
+  },
+  "siteGuardChildFrame": {
+    "message": "同源子框架"
+  },
+  "siteGuardObservedRisks": {
+    "message": "近期观察到 $COUNT$ 个高风险 DOM 改写，请检查推荐组件。",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "siteGuardHealthTitle": {
+    "message": "组件规则状态"
+  },
+  "siteGuardHealthIssues": {
+    "message": "$COUNT$ 条规则需要处理。",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
+  },
+  "siteGuardHealthAllHealthy": {
+    "message": "此页面上的所有组件规则均已生效。"
+  },
+  "siteGuardHealthHealthy": {
+    "message": "已在此页面生效。"
+  },
+  "siteGuardHealthRecovering": {
+    "message": "正在等待稳定的替代组件。"
+  },
+  "siteGuardHealthMissing": {
+    "message": "未找到匹配的组件。"
+  },
+  "siteGuardHealthAmbiguous": {
+    "message": "找到了多个匹配组件。"
+  },
+  "siteGuardHealthWeak": {
+    "message": "此旧规则缺少自动修复所需的组件身份信息。"
+  },
+  "siteGuardHealthInvalid": {
+    "message": "保存的选择器无效。"
+  },
+  "siteGuardHealthUnavailable": {
+    "message": "请重新加载页面以检查此规则。"
+  },
+  "siteGuardRepair": {
+    "message": "修复"
+  },
+  "siteGuardRemoveRule": {
+    "message": "移除"
+  },
+  "siteGuardRemoveConfirm": {
+    "message": "确定移除此组件规则吗？"
+  },
+  "siteGuardPermissionDenied": {
+    "message": "未授予此网站的访问权限。"
+  },
+  "siteGuardUnsupported": {
+    "message": "此页面无法启用保护。"
+  },
+  "siteGuardClearConfirm": {
+    "message": "清除此网站的全部组件规则吗？"
+  },
+  "pickerInstruction": {
+    "message": "将鼠标移到组件上，然后点击以选择保护边界。"
+  },
+  "pickerRepairInstruction": {
+    "message": "请为这条未解决规则选择新的保护边界。"
+  },
+  "pickerSelected": {
+    "message": "已选择组件；请确认，或改选它的父级。"
+  },
+  "pickerSuggested": {
+    "message": "推荐的高风险组件：第 $INDEX$ 个，共 $TOTAL$ 个（评分 $SCORE$）。请确认或查看其他候选。",
+    "placeholders": {
+      "index": { "content": "$1" },
+      "total": { "content": "$2" },
+      "score": { "content": "$3" }
+    }
+  },
+  "pickerObservedSuggestion": {
+    "message": "近期在第 $INDEX$ 个组件（共 $TOTAL$ 个，评分 $SCORE$）中观察到 DOM 文本改写，请确认或查看其他候选。",
+    "placeholders": {
+      "index": { "content": "$1" },
+      "total": { "content": "$2" },
+      "score": { "content": "$3" }
+    }
+  },
+  "pickerProtect": {
+    "message": "保护此组件"
+  },
+  "pickerRepair": {
+    "message": "修复组件规则"
+  },
+  "pickerParent": {
+    "message": "选择父级"
+  },
+  "pickerNextSuggestion": {
+    "message": "下一个候选"
+  },
+  "pickerChooseManually": {
+    "message": "手动选择"
+  },
+  "pickerCancel": {
+    "message": "取消"
+  },
+  "pickerSaved": {
+    "message": "保护已保存；开启网页翻译后请重新加载页面。"
+  },
+  "pickerRepaired": {
+    "message": "组件规则已修复。"
+  },
+  "pickerError": {
+    "message": "无法保存此组件规则。"
+  }
+}

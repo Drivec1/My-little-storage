@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 接口手册 - TurboWarp 云服务器</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+        }
+        .section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        h2 {
+            margin-top: 0;
+            color: #007bff;
+            border-left: 4px solid #007bff;
+            padding-left: 12px;
+        }
+        code {
+            background: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "Fira Code", "Consolas", monospace;
+            font-size: 0.95em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 14px;
+            text-align: left;
+        }
+        th {
+            background: #f2f2f2;
+            font-weight: 600;
+        }
+        .method {
+            font-weight: bold;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.85em;
+            margin-right: 6px;
+        }
+        .get { background: #28a745; }
+        .post { background: #007bff; }
+        .put { background: #fd7e14; }
+        .delete { background: #dc3545; }
+        .url-path {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .note {
+            background: #fff3cd;
+            padding: 14px;
+            border-left: 5px solid #ffc107;
+            margin: 18px 0;
+            border-radius: 4px;
+        }
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        li {
+            margin: 6px 0;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>📖 API 接口手册</h1>
+
+    <!-- IP 检测接口 -->
+    <div class="section">
+        <h2>IP 检测</h2>
+        <p>快速获取请求者的 IP 地址。</p>
+        <table>
+            <tr>
+                <th>功能</th>
+                <th>方法</th>
+                <th>URL 格式</th>
+                <th>示例</th>
+                <th>响应</th>
+            </tr>
+            <tr>
+                <td>获取 IP</td>
+                <td><span class="method get">GET</span></td>
+                <td><code>/ping/项目ID</code></td>
+                <td><code>GET /ping/myproject</code></td>
+                <td><code>{"projectId":"myproject","ip":"192.168.1.5"}</code></td>
+            </tr>
+        </table>
+        <p>💡 项目ID 仅用于日志区分，可任意填写。接口不受服务暂停影响。</p>
+    </div>
+
+    <!-- 变量操作 -->
+    <div class="section">
+        <h2>变量操作</h2>
+        <p>支持 <code>/git</code> 或 <code>/var</code> 前缀。</p>
+        <table>
+            <tr>
+                <th>功能</th>
+                <th>方法</th>
+                <th>URL 格式</th>
+                <th>示例</th>
+            </tr>
+            <tr>
+                <td>读取变量</td>
+                <td><span class="method get">GET</span></td>
+                <td><code>/git/项目ID/变量名</code></td>
+                <td><code>GET /git/myproject/金币</code></td>
+            </tr>
+            <tr>
+                <td>设置变量（路径传值）</td>
+                <td><span class="method post">POST</span></td>
+                <td><code>/git/项目ID/变量名/新值</code></td>
+                <td><code>POST /git/myproject/金币/200</code></td>
+            </tr>
+            <tr>
+                <td>设置变量（Body 传值）</td>
+                <td><span class="method post">POST</span></td>
+                <td><code>/git/项目ID/变量名</code></td>
+                <td><code>POST /git/myproject/金币</code> <br> Body: <code>200</code> 或 <code>{"value":200}</code></td>
+            </tr>
+            <tr>
+                <td>变量增量</td>
+                <td><span class="method post">POST</span></td>
+                <td><code>/git/项目ID/变量名/increment</code></td>
+                <td><code>POST /git/myproject/金币/increment</code> <br> Body: <code>10</code> （正数增加，负数减少）</td>
+            </tr>
+        </table>
+        <p>💡 数字自动存储为数字类型，字符串保持原样。</p>
+    </div>
+
+    <!-- 列表操作 -->
+    <div class="section">
+        <h2>列表操作</h2>
+        <p>使用 <code>/list</code> 前缀。</p>
+        <table>
+            <tr>
+                <th>功能</th>
+                <th>方法</th>
+                <th>URL 格式</th>
+                <th>示例</th>
+            </tr>
+            <tr>
+                <td>创建列表</td>
+                <td><span class="method post">POST</span></td>
+                <td><code>/list/项目ID/列表名/create</code></td>
+                <td><code>POST /list/myproject/玩家/create</code></td>
+            </tr>
+            <tr>
+                <td>读取列表</td>
+                <td><span class="method get">GET</span></td>
+                <td><code>/list/项目ID/列表名</code></td>
+                <td><code>GET /list/myproject/玩家</code></td>
+            </tr>
+            <tr>
+                <td>追加项（路径传值）</td>
+                <td><span class="method post">POST</span></td>
+                <td><code>/list/项目ID/列表名/值</code></td>
+                <td><code>POST /list/myproject/玩家/小明</code></td>
+            </tr>
+            <tr>
+                <td>追加项（Body 传值）</td>
+                <td><span class="method post">POST</span></td>
+                <td><code>/list/项目ID/列表名</code></td>
+                <td><code>POST /list/myproject/玩家</code> <br> Body: <code>小明</code></td>
+            </tr>
+            <tr>
+                <td>替换第 N 项（路径传值）</td>
+                <td><span class="method put">PUT</span></td>
+                <td><code>/list/项目ID/列表名/索引/新值</code></td>
+                <td><code>PUT /list/myproject/玩家/2/小红</code></td>
+            </tr>
+            <tr>
+                <td>替换第 N 项（Body 传值）</td>
+                <td><span class="method put">PUT</span></td>
+                <td><code>/list/项目ID/列表名/索引</code></td>
+                <td><code>PUT /list/myproject/玩家/2</code> <br> Body: <code>小红</code></td>
+            </tr>
+            <tr>
+                <td>删除第 N 项</td>
+                <td><span class="method delete">DELETE</span></td>
+                <td><code>/list/项目ID/列表名/索引</code></td>
+                <td><code>DELETE /list/myproject/玩家/2</code></td>
+            </tr>
+            <tr>
+                <td>清空列表</td>
+                <td><span class="method delete">DELETE</span></td>
+                <td><code>/list/项目ID/列表名</code></td>
+                <td><code>DELETE /list/myproject/玩家</code></td>
+            </tr>
+        </table>
+        <p>💡 列表索引从 <strong>1</strong> 开始。</p>
+    </div>
+
+    <!-- 其他说明 -->
+    <div class="section">
+        <h2>其他信息</h2>
+        <ul>
+            <li>所有接口均支持 <strong>CORS</strong>，可在 TurboWarp 中直接调用。</li>
+            <li>服务器地址：<code>http://你的IP:端口</code>（局域网或公网）。</li>
+            <li>管理面板：<code>/admin</code> （可设置密码、黑名单、监控客户端）。</li>
+            <li>终端命令：<code>/log</code> 导出日志，<code>/stop</code> 暂停服务，<code>/open</code> 恢复服务，<code>/setting 端口</code> 动态改端口。</li>
+            <li>变量名、列表名、项目ID 均支持中文。</li>
+        </ul>
+        <div class="note">
+            ⚠️ 路径传值时，若值包含特殊字符（如斜杠 <code>/</code> 或空格），请进行 URL 编码（例如 <code>%2F</code> 表示 <code>/</code>）。
+        </div>
+    </div>
+</body>
+</html>

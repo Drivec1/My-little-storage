@@ -1,13 +1,13 @@
-// 名称: BackLayer 3D (中文版)
-// ID: Backlayer3d
-// 说明: 在所有 Scratch 角色后面渲染 3D 物体。
-// 作者: Drivec (用户)
-// 许可证: MIT
-// 版本: 1.3.0
+// Name: BackLayer 3D
+// ID: backlayer3d
+// Description: 3D objects rendered behind every Scratch sprite.
+// By: nofileteams
+// License: MIT
+// Version: 1.3.1
 
 (async function (Scratch) {
   "use strict";
-  if (!Scratch.extensions.unsandboxed) throw new Error("BackLayer 3D 必须在无沙盒模式下运行");
+  if (!Scratch.extensions.unsandboxed) throw new Error("BackLayer 3D must run unsandboxed");
 
   const {BlockType, ArgumentType, Cast} = Scratch;
   const vm = Scratch.vm;
@@ -60,7 +60,7 @@
   let skinId = null;
   let rtxShadows = false;
 
-  // [修复] 重用向量/四元数，避免每次调用都分配新对象
+  // [FIX] Reusable scratch objects to avoid per-call allocation
   const _localAxisX = new THREE.Vector3(1, 0, 0);
   const _localAxisY = new THREE.Vector3(0, 1, 0);
   const _localAxisZ = new THREE.Vector3(0, 0, 1);
@@ -180,6 +180,26 @@
     const variable = util.target.lookupVariableByNameAndType(name(listName), "list");
     return variable ? variable.value : [];
   };
+  const loadGLTFList = async items => {
+    const numeric = items.length > 0 && items.every(v => Number.isInteger(Number(v)) && Number(v) >= 0 && Number(v) <= 255);
+    const data = numeric ? Uint8Array.from(items, Number).buffer : items.join("\n").trim();
+    const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(data, "", resolve, reject));
+    gltf.scene.userData.animationClips = gltf.animations || [];
+    gltf.scene.userData.animationMixer = new THREE.AnimationMixer(gltf.scene);
+    return gltf.scene;
+  };
+  const playObjectAnimation = (root, animationName) => {
+    if (!root || !root.userData.animationMixer) return null;
+    const clip = root.userData.animationClips.find(item => item.name === name(animationName));
+    if (!clip) return null;
+    const mixer = root.userData.animationMixer;
+    mixer.stopAllAction();
+    const action = mixer.clipAction(clip);
+    action.reset().setLoop(THREE.LoopOnce, 1);
+    action.clampWhenFinished = true;
+    action.play();
+    return action;
+  };
   const updateFog = () => scene.fog = fogEnabled ? new THREE.Fog(fogColor, 1, Math.max(1, fogDistance)) : null;
   const box = root => new THREE.Box3().setFromObject(root);
   const touching = (a,b) => a && b && !a.userData.passThrough && !b.userData.passThrough && box(a).intersectsBox(box(b));
@@ -230,7 +250,9 @@
     frame = requestAnimationFrame(renderLoop);
     if (!drawing) return;
     if (contextLost) return;
-    updatePhysics(Math.min(_physicsClock.getDelta(), 0.05));
+    const delta = Math.min(_physicsClock.getDelta(), 0.05);
+    updatePhysics(delta);
+    for (const o of objects.values()) if (o.userData.animationMixer) o.userData.animationMixer.update(delta);
     const size = renderer.getNativeSize();
     if (canvas.width !== size[0] || canvas.height !== size[1]) {
       glRenderer.setSize(size[0], size[1], false);
@@ -257,76 +279,79 @@
   class BackLayer3D {
     getInfo() {
       const S = ArgumentType.STRING, N = ArgumentType.NUMBER, C = ArgumentType.COLOR;
-      const onoff = {acceptReporters:true, items:["开启","关闭"]};
-      return {id:"backlayer3d", name:"3D 背景层", color1:"#5B5FEF", color2:"#4549C4", blocks:[
-        {opcode:"reset", blockType:BlockType.COMMAND, text:"重置所有"},
-        {opcode:"create", blockType:BlockType.COMMAND, text:"创建 3D 物体 [NAME]", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"textureCostume", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的纹理设为造型 [COSTUME]", arguments:{NAME:{type:S,defaultValue:"box"},COSTUME:{type:S,defaultValue:"造型1"}}},
-        {opcode:"textureURL", blockType:BlockType.COMMAND, text:"从 URL [URL] 加载物体 [NAME] 的纹理", arguments:{NAME:{type:S,defaultValue:"box"},URL:{type:S,defaultValue:"https://example.com/test.png"}}},
-        {opcode:"modelList", blockType:BlockType.COMMAND, text:"从列表 [LIST] 设置物体 [NAME] 的模型", arguments:{NAME:{type:S,defaultValue:"box"},LIST:{type:S,defaultValue:"列表1"}}},
-        {opcode:"remove", blockType:BlockType.COMMAND, text:"移除物体 [NAME]", arguments:{NAME:{type:S,defaultValue:"box"}}},
+      const onoff = {acceptReporters:true, items:[{text:"开启",value:"on"},{text:"关闭",value:"off"}]};
+      return {id:"backlayer3d", name:"后方图层 3D", color1:"#5B5FEF", color2:"#4549C4", blocks:[
+        {opcode:"reset", blockType:BlockType.COMMAND, text:"全部重置"},
+        {opcode:"create", blockType:BlockType.COMMAND, text:"创建对象 [NAME]", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"textureCostume", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的材质设置为服装 [COSTUME]", arguments:{NAME:{type:S,defaultValue:"box"},COSTUME:{type:S,defaultValue:"costume1"}}},
+        {opcode:"textureURL", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的材质从 URL [URL] 加载", arguments:{NAME:{type:S,defaultValue:"box"},URL:{type:S,defaultValue:"https://example.com/test.png"}}},
+        {opcode:"modelOBJList", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 OBJ 模型设置为列表 [LIST]", arguments:{NAME:{type:S,defaultValue:"box"},LIST:{type:S,defaultValue:"list1"}}},
+        {opcode:"modelGLTFList", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 (gltf/glb) 模型设置为列表 [LIST]", arguments:{NAME:{type:S,defaultValue:"box"},LIST:{type:S,defaultValue:"list1"}}},
+        {opcode:"playAnimation", blockType:BlockType.COMMAND, text:"为对象 [NAME] 播放动画 [ANIMATION]", arguments:{NAME:{type:S,defaultValue:"box"},ANIMATION:{type:S,defaultValue:"Animation"}}},
+        {opcode:"playAnimationUntilDone", blockType:BlockType.COMMAND, text:"为对象 [NAME] 播放动画 [ANIMATION] 并等待完成", arguments:{NAME:{type:S,defaultValue:"box"},ANIMATION:{type:S,defaultValue:"Animation"}}},
+        {opcode:"remove", blockType:BlockType.COMMAND, text:"删除对象 [NAME]", arguments:{NAME:{type:S,defaultValue:"box"}}},
         "---",
-        {opcode:"setPosition", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的位置为 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
-        {opcode:"setPositionX", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 x 位置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"setPositionY", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 y 位置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"setPositionZ", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 z 位置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"changePositionX", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的 x 位置增加 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changePositionY", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的 y 位置增加 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changePositionZ", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的 z 位置增加 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"setRotation", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的旋转为 x [X] y [Y] z [Z] (度)", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
-        {opcode:"setRotationX", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 x 旋转为 [VALUE] (度)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"setRotationY", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 y 旋转为 [VALUE] (度)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"setRotationZ", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 z 旋转为 [VALUE] (度)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"changeRotationX", blockType:BlockType.COMMAND, text:"让物体 [NAME] 绕自身的 x 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changeRotationY", blockType:BlockType.COMMAND, text:"让物体 [NAME] 绕自身的 y 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changeRotationZ", blockType:BlockType.COMMAND, text:"让物体 [NAME] 绕自身的 z 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changeRotationXWorld", blockType:BlockType.COMMAND, text:"让物体 [NAME] 绕世界 x 轴旋转 [VALUE] 度 (不受自身朝向影响)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changeRotationYWorld", blockType:BlockType.COMMAND, text:"让物体 [NAME] 绕世界 y 轴旋转 [VALUE] 度 (不受自身朝向影响)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"changeRotationZWorld", blockType:BlockType.COMMAND, text:"让物体 [NAME] 绕世界 z 轴旋转 [VALUE] 度 (不受自身朝向影响)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"setScale", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的缩放为 x [X] y [Y] z [Z] (%)", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:100},Y:{type:N,defaultValue:100},Z:{type:N,defaultValue:100}}},
-        {opcode:"setScaleX", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 x 缩放为 [VALUE] (%)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:100}}},
-        {opcode:"setScaleY", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 y 缩放为 [VALUE] (%)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:100}}},
-        {opcode:"setScaleZ", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的 z 缩放为 [VALUE] (%)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:100}}},
-        {opcode:"changeScaleX", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的 x 缩放增加 [VALUE] (%)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:10}}},
-        {opcode:"changeScaleY", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的 y 缩放增加 [VALUE] (%)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:10}}},
-        {opcode:"changeScaleZ", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的 z 缩放增加 [VALUE] (%)", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:10}}},
-        {opcode:"moveSteps", blockType:BlockType.COMMAND, text:"让物体 [NAME] 向前移动 [STEPS] 步", arguments:{NAME:{type:S,defaultValue:"box"},STEPS:{type:N,defaultValue:10}}},
-        {opcode:"moveToward", blockType:BlockType.COMMAND, text:"让物体 [NAME] 向 x [X] y [Y] z [Z] 移动 [STEPS] 步", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0},STEPS:{type:N,defaultValue:10}}},
-        {opcode:"pointObject", blockType:BlockType.COMMAND, text:"让物体 [NAME] 朝向物体 [TARGET]", arguments:{NAME:{type:S,defaultValue:"box"},TARGET:{type:S,defaultValue:"target"}}},
-        {opcode:"pointXYZ", blockType:BlockType.COMMAND, text:"让物体 [NAME] 朝向 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
-        {opcode:"glide", blockType:BlockType.COMMAND, text:"让物体 [NAME] 在 [SECONDS] 秒内滑行到 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},SECONDS:{type:N,defaultValue:1},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
+        {opcode:"setPosition", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的位置设置为 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
+        {opcode:"setPositionX", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 x 位置设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"setPositionY", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 y 位置设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"setPositionZ", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 z 位置设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"changePositionX", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 x 位置改变 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changePositionY", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 y 位置改变 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changePositionZ", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 z 位置改变 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"setRotation", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的方向设置为 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
+        {opcode:"setRotationX", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 x 方向设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"setRotationY", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 y 方向设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"setRotationZ", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 z 方向设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"changeRotationX", blockType:BlockType.COMMAND, text:"将对象 [NAME] 绕 x 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changeRotationY", blockType:BlockType.COMMAND, text:"将对象 [NAME] 绕 y 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changeRotationZ", blockType:BlockType.COMMAND, text:"将对象 [NAME] 绕 z 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changeRotationXWorld", blockType:BlockType.COMMAND, text:"以世界坐标将对象 [NAME] 绕 x 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changeRotationYWorld", blockType:BlockType.COMMAND, text:"以世界坐标将对象 [NAME] 绕 y 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"changeRotationZWorld", blockType:BlockType.COMMAND, text:"以世界坐标将对象 [NAME] 绕 z 轴旋转 [VALUE] 度", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"setScale", blockType:BlockType.COMMAND, text:"设置对象 [NAME] 的缩放为 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:100},Y:{type:N,defaultValue:100},Z:{type:N,defaultValue:100}}},
+        {opcode:"setScaleX", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 x 缩放设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:100}}},
+        {opcode:"setScaleY", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 y 缩放设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:100}}},
+        {opcode:"setScaleZ", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 z 缩放设置为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:100}}},
+        {opcode:"changeScaleX", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 x 缩放改变 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:10}}},
+        {opcode:"changeScaleY", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 y 缩放改变 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:10}}},
+        {opcode:"changeScaleZ", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的 z 缩放改变 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:10}}},
+        {opcode:"moveSteps", blockType:BlockType.COMMAND, text:"将对象 [NAME] 移动 [STEPS] 步", arguments:{NAME:{type:S,defaultValue:"box"},STEPS:{type:N,defaultValue:10}}},
+        {opcode:"moveToward", blockType:BlockType.COMMAND, text:"将对象 [NAME] 向 x [X] y [Y] z [Z] 方向移动 [STEPS] 步", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0},STEPS:{type:N,defaultValue:10}}},
+        {opcode:"pointObject", blockType:BlockType.COMMAND, text:"使对象 [NAME] 面向对象 [TARGET]", arguments:{NAME:{type:S,defaultValue:"box"},TARGET:{type:S,defaultValue:"target"}}},
+        {opcode:"pointXYZ", blockType:BlockType.COMMAND, text:"使对象 [NAME] 面向 x [X] y [Y] z [Z] 的位置", arguments:{NAME:{type:S,defaultValue:"box"},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
+        {opcode:"glide", blockType:BlockType.COMMAND, text:"在 [SECONDS] 秒内将对象 [NAME] 平滑移动到 x [X] y [Y] z [Z]", arguments:{NAME:{type:S,defaultValue:"box"},SECONDS:{type:N,defaultValue:1},X:{type:N,defaultValue:0},Y:{type:N,defaultValue:0},Z:{type:N,defaultValue:0}}},
         "---",
-        {opcode:"useCamera", blockType:BlockType.COMMAND, text:"将物体 [NAME] 设为观察摄像机", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"setColor", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的颜色为 [COLOR]", arguments:{NAME:{type:S,defaultValue:"box"},COLOR:{type:C,defaultValue:"#ffffff"}}},
-        {opcode:"setOpacity", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的不透明度为 [VALUE] %", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
-        {opcode:"setPassThrough", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的穿透模式设为 [STATE]", arguments:{NAME:{type:S,defaultValue:"box"},STATE:{type:S,menu:"onoff"}}},
-        {opcode:"setPhysics", blockType:BlockType.COMMAND, text:"将物体 [NAME] 的物理效果设为 [STATE]", arguments:{NAME:{type:S,defaultValue:"box"},STATE:{type:S,menu:"onoff"}}},
-        {opcode:"bounce", blockType:BlockType.COMMAND, text:"若物体 [NAME] 碰到其他物体则弹开", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"isTouching", blockType:BlockType.BOOLEAN, text:"物体 [NAME] 是否碰到物体 [TARGET]", arguments:{NAME:{type:S,defaultValue:"box"},TARGET:{type:S,defaultValue:"target"}}},
+        {opcode:"useCamera", blockType:BlockType.COMMAND, text:"将对象 [NAME] 设为视点摄像机", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"setColor", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的颜色设置为 [COLOR]", arguments:{NAME:{type:S,defaultValue:"box"},COLOR:{type:C,defaultValue:"#ffffff"}}},
+        {opcode:"setOpacity", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的不透明度设为 [VALUE] %", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:0}}},
+        {opcode:"setPassThrough", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的穿透设置为 [STATE]", arguments:{NAME:{type:S,defaultValue:"box"},STATE:{type:S,menu:"onoff"}}},
+        {opcode:"setPhysics", blockType:BlockType.COMMAND, text:"将对象 [NAME] 的物理设置为 [STATE]", arguments:{NAME:{type:S,defaultValue:"box"},STATE:{type:S,menu:"onoff"}}},
+        {opcode:"bounce", blockType:BlockType.COMMAND, text:"如果对象 [NAME] 接触到其他对象则弹开", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"isTouching", blockType:BlockType.BOOLEAN, text:"对象 [NAME] 是否接触对象 [TARGET]", arguments:{NAME:{type:S,defaultValue:"box"},TARGET:{type:S,defaultValue:"target"}}},
         "---",
         {opcode:"start", blockType:BlockType.COMMAND, text:"开始渲染"},
         {opcode:"stop", blockType:BlockType.COMMAND, text:"停止渲染"},
-        {opcode:"isDrawing", blockType:BlockType.BOOLEAN, text:"是否正在渲染？"},
-        {opcode:"setFogDistance", blockType:BlockType.COMMAND, text:"设置雾距离为 [VALUE]", arguments:{VALUE:{type:N,defaultValue:100}}},
-        {opcode:"setFogColor", blockType:BlockType.COMMAND, text:"设置雾颜色为 [COLOR]", arguments:{COLOR:{type:C,defaultValue:"#ffffff"}}},
-        {opcode:"setFog", blockType:BlockType.COMMAND, text:"将雾设为 [STATE]", arguments:{STATE:{type:S,menu:"onoff"}}},
+        {opcode:"isDrawing", blockType:BlockType.BOOLEAN, text:"正在渲染吗？"},
+        {opcode:"setFogDistance", blockType:BlockType.COMMAND, text:"将雾的距离设置为 [VALUE]", arguments:{VALUE:{type:N,defaultValue:100}}},
+        {opcode:"setFogColor", blockType:BlockType.COMMAND, text:"将雾的颜色设置为 [COLOR]", arguments:{COLOR:{type:C,defaultValue:"#ffffff"}}},
+        {opcode:"setFog", blockType:BlockType.COMMAND, text:"将雾设置为 [STATE]", arguments:{STATE:{type:S,menu:"onoff"}}},
         "---",
-        {opcode:"setLight", blockType:BlockType.COMMAND, text:"将物体 [NAME] 设为光源 [STATE]", arguments:{NAME:{type:S,defaultValue:"light"},STATE:{type:S,menu:"onoff"}}},
-        {opcode:"setLightIntensity", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的光源强度为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"light"},VALUE:{type:N,defaultValue:10}}},
-        {opcode:"setLightColor", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的光源颜色为 [COLOR]", arguments:{NAME:{type:S,defaultValue:"light"},COLOR:{type:C,defaultValue:"#ffffff"}}},
-        {opcode:"setReflectivity", blockType:BlockType.COMMAND, text:"设置物体 [NAME] 的反射率为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
-        {opcode:"setRTXShadows", blockType:BlockType.COMMAND, text:"将 RTX 阴影设为 [STATE]", arguments:{STATE:{type:S,menu:"onoff"}}},
+        {opcode:"setLight", blockType:BlockType.COMMAND, text:"将对象 [NAME] 设为光源 [STATE]", arguments:{NAME:{type:S,defaultValue:"light"},STATE:{type:S,menu:"onoff"}}},
+        {opcode:"setLightIntensity", blockType:BlockType.COMMAND, text:"设置对象 [NAME] 的光强为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"light"},VALUE:{type:N,defaultValue:10}}},
+        {opcode:"setLightColor", blockType:BlockType.COMMAND, text:"设置对象 [NAME] 的光颜色为 [COLOR]", arguments:{NAME:{type:S,defaultValue:"light"},COLOR:{type:C,defaultValue:"#ffffff"}}},
+        {opcode:"setReflectivity", blockType:BlockType.COMMAND, text:"设置对象 [NAME] 的反射强度为 [VALUE]", arguments:{NAME:{type:S,defaultValue:"box"},VALUE:{type:N,defaultValue:1}}},
+        {opcode:"setRTXShadows", blockType:BlockType.COMMAND, text:"将高级阴影（RTX）设置为 [STATE]", arguments:{STATE:{type:S,menu:"onoff"}}},
         "---",
-        {opcode:"getPositionX", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 x 位置", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getPositionY", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 y 位置", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getPositionZ", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 z 位置", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getRotationX", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 x 旋转 (度)", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getRotationY", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 y 旋转 (度)", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getRotationZ", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 z 旋转 (度)", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getScaleX", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 x 缩放 (%)", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getScaleY", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 y 缩放 (%)", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"getScaleZ", blockType:BlockType.REPORTER, text:"物体 [NAME] 的 z 缩放 (%)", arguments:{NAME:{type:S,defaultValue:"box"}}},
-        {opcode:"distance", blockType:BlockType.REPORTER, text:"物体 [NAME] 到物体 [TARGET] 的距离", arguments:{NAME:{type:S,defaultValue:"box"},TARGET:{type:S,defaultValue:"target"}}}
+        {opcode:"getPositionX", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 x 位置", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getPositionY", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 y 位置", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getPositionZ", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 z 位置", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getRotationX", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 x 旋转（度）", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getRotationY", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 y 旋转（度）", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getRotationZ", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 z 旋转（度）", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getScaleX", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 x 缩放（%）", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getScaleY", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 y 缩放（%）", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"getScaleZ", blockType:BlockType.REPORTER, text:"对象 [NAME] 的 z 缩放（%）", arguments:{NAME:{type:S,defaultValue:"box"}}},
+        {opcode:"distance", blockType:BlockType.REPORTER, text:"对象 [NAME] 到对象 [TARGET] 的距离", arguments:{NAME:{type:S,defaultValue:"box"},TARGET:{type:S,defaultValue:"target"}}}
       ], menus:{axis:{acceptReporters:true,items:["x","y","z"]},onoff}};
     }
 
@@ -344,9 +369,13 @@
     setRotationX(a){const o=object(a.NAME);if(o)o.rotation.x=THREE.MathUtils.degToRad(num(a.VALUE));}
     setRotationY(a){const o=object(a.NAME);if(o)o.rotation.y=THREE.MathUtils.degToRad(num(a.VALUE));}
     setRotationZ(a){const o=object(a.NAME);if(o)o.rotation.z=THREE.MathUtils.degToRad(num(a.VALUE));}
+    // [FIX v1.2.1] ローカル軸回転: オブジェクトの向き基準で回転する
+    //   Before: o.rotation.x += deg (ワールド軸の Euler 回転 → オブジェクトが向いてる方向と無関係)
+    //   After:  quaternion.multiply(deltaQuat on local axis) → オブジェクトのローカル軸で回転
     changeRotationX(a){const o=object(a.NAME);if(o){_deltaQuat.setFromAxisAngle(_localAxisX,THREE.MathUtils.degToRad(num(a.VALUE)));o.quaternion.multiply(_deltaQuat);o.rotation.setFromQuaternion(o.quaternion);}}
     changeRotationY(a){const o=object(a.NAME);if(o){_deltaQuat.setFromAxisAngle(_localAxisY,THREE.MathUtils.degToRad(num(a.VALUE)));o.quaternion.multiply(_deltaQuat);o.rotation.setFromQuaternion(o.quaternion);}}
     changeRotationZ(a){const o=object(a.NAME);if(o){_deltaQuat.setFromAxisAngle(_localAxisZ,THREE.MathUtils.degToRad(num(a.VALUE)));o.quaternion.multiply(_deltaQuat);o.rotation.setFromQuaternion(o.quaternion);}}
+    // ワールド軸回転（オブジェクト自身の向きに影響されない）
     changeRotationXWorld(a){const o=object(a.NAME);if(o){_deltaQuat.setFromAxisAngle(_localAxisX,THREE.MathUtils.degToRad(num(a.VALUE)));o.quaternion.premultiply(_deltaQuat);o.rotation.setFromQuaternion(o.quaternion);}}
     changeRotationYWorld(a){const o=object(a.NAME);if(o){_deltaQuat.setFromAxisAngle(_localAxisY,THREE.MathUtils.degToRad(num(a.VALUE)));o.quaternion.premultiply(_deltaQuat);o.rotation.setFromQuaternion(o.quaternion);}}
     changeRotationZWorld(a){const o=object(a.NAME);if(o){_deltaQuat.setFromAxisAngle(_localAxisZ,THREE.MathUtils.degToRad(num(a.VALUE)));o.quaternion.premultiply(_deltaQuat);o.rotation.setFromQuaternion(o.quaternion);}}
@@ -365,8 +394,8 @@
     useCamera(a){const n=name(a.NAME),o=objects.get(n);if(o){cameraObject=n;o.getWorldPosition(camera.position);o.getWorldQuaternion(camera.quaternion);}}
     setColor(a){const o=object(a.NAME);if(o)setMaterial(o,m=>m.color&&m.color.set(color(a.COLOR)));}
     setOpacity(a){const o=object(a.NAME),opacity=THREE.MathUtils.clamp(1-num(a.VALUE)/100,0,1);if(o)setMaterial(o,m=>{m.transparent=opacity<1;m.opacity=opacity;m.needsUpdate=true;});}
-    setPassThrough(a){const o=object(a.NAME);if(o)o.userData.passThrough=name(a.STATE)==="开启";}
-    setPhysics(a){const o=object(a.NAME);if(o){o.userData.physics=name(a.STATE)==="开启";if(!o.userData.physics)o.userData.velocityY=0;}}
+    setPassThrough(a){const o=object(a.NAME);if(o)o.userData.passThrough=name(a.STATE)==="on";}
+    setPhysics(a){const o=object(a.NAME);if(o){o.userData.physics=name(a.STATE)==="on";if(!o.userData.physics)o.userData.velocityY=0;}}
     isTouching(a){return touching(object(a.NAME),object(a.TARGET));}
     bounce(a){const o=object(a.NAME);if(!o||o.userData.passThrough)return;for(const other of objects.values()){if(other!==o&&touching(o,other)){const delta=o.position.clone().sub(other.position);if(Math.abs(delta.x)>=Math.abs(delta.y)&&Math.abs(delta.x)>=Math.abs(delta.z))o.position.x+=Math.sign(delta.x||1)*0.2;else if(Math.abs(delta.y)>=Math.abs(delta.z))o.position.y+=Math.sign(delta.y||1)*0.2;else o.position.z+=Math.sign(delta.z||1)*0.2;break;}}}
     start(){drawing=true;}
@@ -374,12 +403,12 @@
     isDrawing(){return drawing;}
     setFogDistance(a){fogDistance=num(a.VALUE);updateFog();}
     setFogColor(a){fogColor=color(a.COLOR);updateFog();}
-    setFog(a){fogEnabled=name(a.STATE)==="开启";updateFog();}
-    setLight(a){const n=name(a.NAME),o=objects.get(n);if(!o)return;if(name(a.STATE)==="开启"){let l=lights.get(n);if(!l){l=new THREE.PointLight(0xffffff,10,100);lights.set(n,l);scene.add(l);}l.castShadow=rtxShadows;o.getWorldPosition(l.position);}else{const l=lights.get(n);if(l){scene.remove(l);lights.delete(n);}}}
+    setFog(a){fogEnabled=name(a.STATE)==="on";updateFog();}
+    setLight(a){const n=name(a.NAME),o=objects.get(n);if(!o)return;if(name(a.STATE)==="on"){let l=lights.get(n);if(!l){l=new THREE.PointLight(0xffffff,10,100);lights.set(n,l);scene.add(l);}l.castShadow=rtxShadows;o.getWorldPosition(l.position);}else{const l=lights.get(n);if(l){scene.remove(l);lights.delete(n);}}}
     setLightIntensity(a){const l=lights.get(name(a.NAME));if(l)l.intensity=num(a.VALUE);}
     setLightColor(a){const l=lights.get(name(a.NAME));if(l)l.color.set(color(a.COLOR));}
     setReflectivity(a){const o=object(a.NAME),v=THREE.MathUtils.clamp(num(a.VALUE),0,1);if(o)setMaterial(o,m=>{if("metalness" in m)m.metalness=v;if("roughness" in m)m.roughness=1-v;m.needsUpdate=true;});}
-    setRTXShadows(a){rtxShadows=name(a.STATE)==="开启";glRenderer.shadowMap.type=rtxShadows?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;glRenderer.shadowMap.needsUpdate=true;applyRTXToAll();}
+    setRTXShadows(a){rtxShadows=name(a.STATE)==="on";glRenderer.shadowMap.type=rtxShadows?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;glRenderer.shadowMap.needsUpdate=true;applyRTXToAll();}
     getPositionX(a){const o=object(a.NAME);return o?o.position.x:0;}
     getPositionY(a){const o=object(a.NAME);return o?o.position.y:0;}
     getPositionZ(a){const o=object(a.NAME);return o?o.position.z:0;}
@@ -393,7 +422,10 @@
 
     async textureCostume(a,util){const o=object(a.NAME);if(!o)return;const costume=util.target.sprite.costumes.find(c=>c.name===name(a.COSTUME));if(!costume||!costume.asset)return;const texture=await new THREE.TextureLoader().loadAsync(costume.asset.encodeDataURI());texture.colorSpace=THREE.SRGBColorSpace;setMaterial(o,m=>{m.map=texture;m.transparent=true;m.depthWrite=false;m.needsUpdate=true;});}
     async textureURL(a){const o=object(a.NAME);if(!o)return;const url=name(a.URL);if(!await Scratch.canFetch(url))return;const response=await Scratch.fetch(url);const blob=await response.blob();const local=URL.createObjectURL(blob);try{const texture=await new THREE.TextureLoader().loadAsync(local);texture.colorSpace=THREE.SRGBColorSpace;setMaterial(o,m=>{m.map=texture;m.transparent=true;m.depthWrite=false;m.needsUpdate=true;});}finally{URL.revokeObjectURL(local);}}
-    async modelList(a,util){const n=name(a.NAME),items=listValue(a.LIST,util);if(!objects.has(n)||!items.length)return;let root;if(items.every(v=>Number.isFinite(Number(v))&&Number(v)>=0&&Number(v)<=255)){const bytes=new Uint8Array(items.map(Number));const gltf=await new Promise((resolve,reject)=>new GLTFLoader().parse(bytes.buffer,"",resolve,reject));root=gltf.scene;}else{const text=items.join("\n").trim();if(text.startsWith("{")||text.startsWith("[")){const gltf=await new Promise((resolve,reject)=>new GLTFLoader().parse(text,"",resolve,reject));root=gltf.scene;}else root=new OBJLoader().parse(text);}replaceObject(n,root);}
+    modelOBJList(a,util){const n=name(a.NAME),items=listValue(a.LIST,util);if(!objects.has(n)||!items.length)return;replaceObject(n,new OBJLoader().parse(items.join("\n")));}
+    async modelGLTFList(a,util){const n=name(a.NAME),items=listValue(a.LIST,util);if(!objects.has(n)||!items.length)return;replaceObject(n,await loadGLTFList(items));}
+    playAnimation(a){playObjectAnimation(object(a.NAME),a.ANIMATION);}
+    playAnimationUntilDone(a,util){const o=object(a.NAME);if(!o)return;if(!util.stackFrame.action){const action=playObjectAnimation(o,a.ANIMATION);if(!action)return;util.stackFrame.action=action;}if(util.stackFrame.action.isRunning())util.yield();}
   }
 
   runtime.on("PROJECT_STOP_ALL", () => { drawing = false; clearSkin(); });

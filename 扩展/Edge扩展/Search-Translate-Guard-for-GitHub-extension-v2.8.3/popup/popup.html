@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Site protection</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <h1 data-i18n="siteGuardTitle">Site protection</h1>
+      <p class="origin" id="origin"></p>
+      <p class="status" id="status" aria-live="polite"></p>
+      <p class="built-in" id="built-in" data-i18n="siteGuardBuiltInActive" hidden>GitHub's built-in search protection is active.</p>
+      <p class="summary" id="summary"></p>
+      <p class="frames" id="frames" aria-live="polite" hidden></p>
+      <p class="observed" id="observed" aria-live="polite" hidden></p>
+      <p class="error" id="error" aria-live="assertive" hidden></p>
+
+      <section class="rule-health" id="rule-health" hidden>
+        <h2 data-i18n="siteGuardHealthTitle">Component rule health</h2>
+        <p class="health-summary" id="health-summary"></p>
+        <ul class="rule-list" id="rule-list"></ul>
+      </section>
+
+      <div class="actions">
+        <button class="primary" id="enable" type="button" data-i18n="siteGuardEnable">Enable for this site</button>
+        <button class="primary" id="select" type="button" data-i18n="siteGuardSelect">Find or select components</button>
+        <button id="clear" type="button" data-i18n="siteGuardClear">Clear component rules</button>
+        <button class="danger" id="disable" type="button" data-i18n="siteGuardDisable">Disable for this site</button>
+      </div>
+      <p class="hint" data-i18n="siteGuardReloadHint">Reload the page after adding or removing protection rules.</p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
