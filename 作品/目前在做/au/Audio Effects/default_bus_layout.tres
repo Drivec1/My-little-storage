@@ -1,0 +1,10 @@
+[gd_resource type="AudioBusLayout" format=3 uid="uid://bgy2gabxaumfg"]
+
+[sub_resource type="AudioEffectCompressor" id="AudioEffectCompressor_x5uog"]
+resource_name = "Compressor"
+sidechain = &"Master"
+
+[resource]
+bus/0/volume_db = 6.0199986
+bus/0/effect/0/effect = SubResource("AudioEffectCompressor_x5uog")
+bus/0/effect/0/enabled = true

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgpjdgbk81wfx"
-path="res://.godot/imported/spr_heartshards_3.png-fffdea032ac22747916ab6835275b900.ctex"
+uid="uid://b6o5erqeli7qk"
+path="res://.godot/imported/spr_allsoul_5.png-9cf6e3e00585f9065da5ca2ea2e6f07a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/heart/spr_heartshards_3.png"
-dest_files=["res://.godot/imported/spr_heartshards_3.png-fffdea032ac22747916ab6835275b900.ctex"]
+source_file="res://textures/heart/spr_allsoul_5.png"
+dest_files=["res://.godot/imported/spr_allsoul_5.png-9cf6e3e00585f9065da5ca2ea2e6f07a.ctex"]
 
 [params]
 

@@ -1,0 +1,143 @@
+[gd_scene format=3 uid="uid://cihf33nw53euu"]
+
+[ext_resource type="Texture2D" uid="uid://cj3jtp4f0uexv" path="res://textures/开始背景.svg" id="1_7obuc"]
+[ext_resource type="Texture2D" uid="uid://cpvnwyk6pldcv" path="res://textures/spr_flowey_riseanim_0-Sheet.png" id="2_wqkam"]
+[ext_resource type="Texture2D" uid="uid://dgskhf5ldxdek" path="res://textures/heart/spr_allsoul_0.png" id="3_44kwu"]
+[ext_resource type="Texture2D" uid="uid://ccf0qp4bghf46" path="res://textures/heart/spr_allsoul_1.png" id="4_0vn2b"]
+[ext_resource type="Script" uid="uid://bf07yp4gh4sk0" path="res://Script/旋转.gd" id="4_vrsbg"]
+[ext_resource type="Texture2D" uid="uid://dye0xsbh6nqo2" path="res://textures/heart/spr_allsoul_2.png" id="5_qjlin"]
+[ext_resource type="Script" uid="uid://c8pblq0tofsad" path="res://Script/旋转1.gd" id="6_7j1je"]
+[ext_resource type="Texture2D" uid="uid://dudhy4wlkbkhl" path="res://textures/heart/spr_allsoul_3.png" id="6_vrsbg"]
+[ext_resource type="Texture2D" uid="uid://iggn5yrm2eby" path="res://textures/heart/spr_allsoul_4.png" id="7_s3lw3"]
+[ext_resource type="Texture2D" uid="uid://b6o5erqeli7qk" path="res://textures/heart/spr_allsoul_5.png" id="8_04ses"]
+[ext_resource type="Script" uid="uid://fko8qe6f6iij" path="res://Script/旋转2.gd" id="8_icb88"]
+[ext_resource type="AudioStream" uid="uid://bmpql17mgjcas" path="res://sounds/Finale.mp3" id="9_0vn2b"]
+[ext_resource type="Script" uid="uid://cxtjvdfc4ib8j" path="res://Script/旋转3.gd" id="10_s6o10"]
+[ext_resource type="Script" uid="uid://dudv3s61jftn2" path="res://Script/旋转4.gd" id="12_auq0u"]
+[ext_resource type="Script" uid="uid://c4o6diryu70uo" path="res://Script/旋转5.gd" id="14_kemyd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hx2ny"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(0, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hf60i"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(45, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2sywk"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(90, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_527lt"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(135, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vt6d5"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(180, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_44kwu"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(225, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0vn2b"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(270, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qjlin"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(315, 0, 45, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vrsbg"]
+atlas = ExtResource("2_wqkam")
+region = Rect2(360, 0, 45, 53)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ubxb5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hx2ny")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hf60i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2sywk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_527lt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vt6d5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_44kwu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0vn2b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qjlin")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vrsbg")
+}],
+"loop": 0,
+"name": &"default",
+"speed": 9.0
+}]
+
+[node name="SceneManager" type="Node2D" unique_id=1797779452]
+metadata/_edit_use_anchors_ = true
+
+[node name="左侧背景" type="TextureRect" parent="." unique_id=1846885960]
+texture_filter = 2
+offset_left = -20.0
+offset_top = -36.0
+offset_right = 782.0
+offset_bottom = 508.0
+texture = ExtResource("1_7obuc")
+
+[node name="小花" type="AnimatedSprite2D" parent="." unique_id=1073901650]
+position = Vector2(460, 240.00003)
+scale = Vector2(3.8008835, 3.4814398)
+sprite_frames = SubResource("SpriteFrames_ubxb5")
+autoplay = "default"
+frame = 8
+frame_progress = 1.0
+
+[node name="耐心" type="Sprite2D" parent="小花" unique_id=452376598]
+scale = Vector2(0.6248546, 0.69116473)
+texture = ExtResource("3_44kwu")
+script = ExtResource("4_vrsbg")
+
+[node name="勇气" type="Sprite2D" parent="小花" unique_id=1062153240]
+scale = Vector2(0.6248546, 0.69116473)
+texture = ExtResource("4_0vn2b")
+script = ExtResource("6_7j1je")
+
+[node name="正直" type="Sprite2D" parent="小花" unique_id=1868806585]
+scale = Vector2(0.6248546, 0.69116473)
+texture = ExtResource("5_qjlin")
+script = ExtResource("8_icb88")
+
+[node name="毅力" type="Sprite2D" parent="小花" unique_id=1672410829]
+scale = Vector2(0.6248546, 0.69116473)
+texture = ExtResource("6_vrsbg")
+script = ExtResource("10_s6o10")
+
+[node name="仁慈" type="Sprite2D" parent="小花" unique_id=45069868]
+scale = Vector2(0.6248546, 0.69116473)
+texture = ExtResource("7_s3lw3")
+script = ExtResource("12_auq0u")
+
+[node name="正义" type="Sprite2D" parent="小花" unique_id=373348452]
+scale = Vector2(0.6248546, 0.69116473)
+texture = ExtResource("8_04ses")
+script = ExtResource("14_kemyd")
+
+[node name="Finale" type="AudioStreamPlayer" parent="小花" unique_id=285435955]
+stream = ExtResource("9_0vn2b")
+autoplay = true
+mix_target = 1
+max_polyphony = 10
