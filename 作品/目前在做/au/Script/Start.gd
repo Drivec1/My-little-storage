@@ -14,12 +14,12 @@ func _process(delta):
 	if not is_animation_done and animation_player.is_playing():
 		if animation_player.current_animation_position >= trigger_time:
 			is_animation_done = true
-			print("动画到达 2.4 秒，已解锁")  # 可选，不想要可以删掉
+			print("动画到达 2.4 秒[", Time.get_datetime_string_from_system() , "]")  # 可选，不想要可以删掉
 
 func _input(event):
 	if event.is_action_pressed("confirm"):
 		if is_animation_done:
-			print("跳转成功")
+			print("跳转成功[", Time.get_datetime_string_from_system() , "]")
 			get_tree().change_scene_to_file(target_scene_path)
 		else:
-			print("动画未播放跳转失败")
+			print("动画未播放跳转失败[", Time.get_datetime_string_from_system() , "]")
