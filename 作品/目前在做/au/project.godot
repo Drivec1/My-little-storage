@@ -25,6 +25,7 @@ buses/default_bus_layout="uid://bgy2gabxaumfg"
 [autoload]
 
 F4="*uid://cigm0ysjsek5n"
+"打字机"="*uid://dif17bs6l2nhq"
 
 [display]
 

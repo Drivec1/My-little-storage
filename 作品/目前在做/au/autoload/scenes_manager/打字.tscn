@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dif17bs6l2nhq"]
+
+[ext_resource type="Script" uid="uid://cjkns7r88syjm" path="res://Script/打字机.gd" id="2_g03k3"]
+
+[node name="打字机" type="RichTextLabel" unique_id=1864663649]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_g03k3")
+metadata/_edit_use_anchors_ = true
