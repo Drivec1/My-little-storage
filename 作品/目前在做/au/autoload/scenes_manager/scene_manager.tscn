@@ -17,7 +17,8 @@
 [ext_resource type="Script" uid="uid://dudv3s61jftn2" path="res://Script/旋转4.gd" id="12_auq0u"]
 [ext_resource type="Script" uid="uid://c4o6diryu70uo" path="res://Script/旋转5.gd" id="14_kemyd"]
 [ext_resource type="FontFile" uid="uid://bsrin35wg3hk5" path="res://fonts/MonsterFriendFore.otf" id="15_78iai"]
-[ext_resource type="Script" uid="uid://ckwo5yw43mocm" path="res://autoload/scenes_manager/输入.gd" id="18_s6o10"]
+[ext_resource type="Texture2D" uid="uid://ccgeky6efu2m" path="res://icon.svg" id="20_4urw0"]
+[ext_resource type="Script" uid="uid://d3g3fyxnfpocj" path="res://Script/上下移动.gd" id="21_qakh4"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ubxb5"]
 font = ExtResource("15_78iai")
@@ -150,10 +151,11 @@ metadata/_edit_use_anchors_ = true
 
 [node name="左侧背景" type="TextureRect" parent="." unique_id=1846885960]
 texture_filter = 2
-offset_left = -9.0
-offset_top = -19.0
-offset_right = 925.0
-offset_bottom = 525.0
+offset_left = -8.0
+offset_top = -23.999998
+offset_right = 926.0
+offset_bottom = 520.0
+scale = Vector2(1.1303464, 0.94519717)
 mouse_filter = 2
 texture = ExtResource("1_7obuc")
 
@@ -163,6 +165,17 @@ offset_top = 218.0
 offset_right = 206.0
 offset_bottom = 254.0
 text = "PLAY"
+label_settings = SubResource("LabelSettings_ubxb5")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 161
+
+[node name="设置字体" type="Label" parent="." unique_id=2041230063]
+offset_left = 80.0
+offset_top = 164.0
+offset_right = 305.0
+offset_bottom = 194.0
+text = "seetings"
 label_settings = SubResource("LabelSettings_ubxb5")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -216,13 +229,8 @@ autoplay = true
 mix_target = 1
 max_polyphony = 10
 
-[node name="输入框" type="LineEdit" parent="." unique_id=146607110]
-offset_left = 65.0
-offset_top = 264.0
-offset_right = 199.0
-offset_bottom = 295.0
-expand_to_text_length = true
-clear_button_enabled = true
-middle_mouse_paste_enabled = false
-caret_blink = true
-script = ExtResource("18_s6o10")
+[node name="决心" type="Sprite2D" parent="." unique_id=762386894]
+position = Vector2(50, 235)
+scale = Vector2(0.175, 0.175)
+texture = ExtResource("20_4urw0")
+script = ExtResource("21_qakh4")

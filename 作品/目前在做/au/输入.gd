@@ -25,6 +25,7 @@ func _当用户提交(提交的文本: String):
 	
 	# 6. 配置打字机
 	var 配置 = {
+		"字体路径": "res://fonts/FZXS_ 14_fixed.ttf",
 		"字体大小": 20,
 		"默认颜色": Color(1, 1, 1),
 		"纯文本模式": true 

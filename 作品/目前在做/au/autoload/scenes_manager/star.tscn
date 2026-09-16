@@ -11,10 +11,6 @@ _data = {
 &"RESET": ExtResource("2_vwq2u")
 }
 
-[sub_resource type="LabelSettings" id="LabelSettings_saebj"]
-font = ExtResource("3_idwly")
-font_size = 60
-
 [sub_resource type="Theme" id="Theme_ubxb5"]
 default_font = ExtResource("3_idwly")
 default_font_size = 30
@@ -36,104 +32,6 @@ script = ExtResource("1_rmivl")
 libraries/ = SubResource("AnimationLibrary_ef6vd")
 autoplay = &"RESET"
 
-[node name="游戏主标题" type="Label" parent="." unique_id=959463545]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0859375
-anchor_top = 0.13541667
-anchor_right = 0.9415186
-anchor_bottom = 0.5229216
-offset_top = -240.0
-offset_bottom = -240.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "
-UNdERTaLE
-"
-label_settings = SubResource("LabelSettings_saebj")
-horizontal_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="覆盖层3" type="ColorRect" parent="游戏主标题" unique_id=1710781679]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.49673843
-anchor_top = 0.39783272
-anchor_right = 0.5369157
-anchor_bottom = 0.49998212
-offset_right = 46.74991
-offset_bottom = 48.85721
-grow_vertical = 0
-scale = Vector2(0.31999996, 0.28)
-color = Color(0.92941177, 0.10980392, 0.14117648, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="游戏副标题" type="RichTextLabel" parent="游戏主标题" unique_id=1993595894]
-visible = false
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.15483984
-anchor_top = 0.8387115
-anchor_right = 0.8451601
-anchor_bottom = 1.0
-offset_left = 0.2140503
-offset_top = -0.0001373291
-offset_right = 0.2140503
-offset_bottom = -0.0001373291
-grow_horizontal = 2
-grow_vertical = 0
-theme = SubResource("Theme_ubxb5")
-bbcode_enabled = true
-text = "[color=#FF8C00]F[/color][color=#FFD700]L[/color][color=#00CC00]O[/color][color=#00CED1]W[/color][color=#4169E1]E[/color][color=#8B008B]R[/color]        [color=red]GaMR[/color]"
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="复盖层2" type="ColorRect" parent="游戏主标题/游戏副标题" unique_id=295740503]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.14814815
-anchor_top = 0.26659283
-anchor_right = 0.22389905
-anchor_bottom = 0.8542115
-offset_right = 28.800001
-offset_bottom = 28.8
-grow_vertical = 0
-scale = Vector2(0.31999996, 0.28)
-color = Color(0.92941177, 0.10980392, 0.14117648, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="复盖层1" type="ColorRect" parent="游戏主标题/游戏副标题" unique_id=1053623677]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.4047619
-anchor_top = 0.16659327
-anchor_right = 0.48051286
-anchor_bottom = 0.51611835
-offset_right = 28.800001
-offset_bottom = 28.8
-grow_vertical = 0
-scale = Vector2(0.31999996, 0.28)
-color = Color(0.92941177, 0.10980392, 0.14117648, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="Z键说明标签" type="Label" parent="游戏主标题" unique_id=671051676]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.32507145
-anchor_top = 1.9462211
-anchor_right = 0.64283794
-anchor_bottom = 1.9999843
-grow_horizontal = 2
-grow_vertical = 0
-text = "[PRESS Z TO START]"
-label_settings = SubResource("LabelSettings_frmbg")
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
 [node name="闪光控制器" type="ColorRect" parent="." unique_id=1124911843]
 layout_mode = 1
 anchors_preset = -1
@@ -151,3 +49,57 @@ metadata/_edit_use_anchors_ = true
 
 [node name="背景音乐控制器" type="AudioStreamPlayer" parent="闪光控制器" unique_id=1676979110]
 stream = ExtResource("5_npkaw")
+
+[node name="游戏主标题" type="RichTextLabel" parent="." unique_id=1993595894]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.184375
+anchor_top = 0.125
+anchor_right = 0.7203125
+anchor_bottom = 0.21458334
+offset_left = -93.0
+offset_top = -560.0
+offset_right = -102.5
+offset_bottom = -572.99976
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(1.8, 1.796)
+theme = SubResource("Theme_ubxb5")
+bbcode_enabled = true
+text = "UNdERFLOWER"
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="复盖层1" type="ColorRect" parent="游戏主标题" unique_id=1053623677]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4047619
+anchor_top = 0.16659327
+anchor_right = 0.48051286
+anchor_bottom = 0.51611835
+offset_right = 28.800001
+offset_bottom = 28.8
+grow_vertical = 0
+scale = Vector2(0.31999996, 0.28)
+color = Color(0.92941177, 0.10980392, 0.14117648, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="Z键说明标签" type="Label" parent="游戏主标题" unique_id=671051676]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.48932272
+anchor_top = 9.194318
+anchor_right = 0.8070892
+anchor_bottom = 9.24808
+offset_left = -83.18913
+offset_top = -75.83206
+offset_right = -15.164246
+offset_bottom = -67.44495
+grow_horizontal = 2
+grow_vertical = 0
+text = "[PRESS Z TO START]"
+label_settings = SubResource("LabelSettings_frmbg")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
