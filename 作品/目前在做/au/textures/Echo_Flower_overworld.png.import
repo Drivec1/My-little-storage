@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgskhf5ldxdek"
-path.s3tc="res://.godot/imported/spr_allsoul_0.png-48059eeec0e4ec42795b78f924593fae.s3tc.ctex"
+uid="uid://bd7ifviyokr0l"
+path.s3tc="res://.godot/imported/Echo_Flower_overworld.png-3cf4768a2d34f6b63417d07043b5dd1d.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://textures/heart/spr_allsoul_0.png"
-dest_files=["res://.godot/imported/spr_allsoul_0.png-48059eeec0e4ec42795b78f924593fae.s3tc.ctex"]
+source_file="res://textures/Echo_Flower_overworld.png"
+dest_files=["res://.godot/imported/Echo_Flower_overworld.png-3cf4768a2d34f6b63417d07043b5dd1d.s3tc.ctex"]
 
 [params]
 

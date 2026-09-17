@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://6lkynel2fj1h"]
+
+[ext_resource type="Texture2D" uid="uid://dgskhf5ldxdek" path="res://textures/heart/spr_allsoul_0.png" id="1_7bbap"]
+[ext_resource type="Texture2D" uid="uid://bd7ifviyokr0l" path="res://textures/Echo_Flower_overworld.png" id="2_400fp"]
+
+[node name="Node3D" type="Node3D" unique_id=1477385079]
+
+[node name="Camera2D" type="Camera3D" parent="." unique_id=452599364]
+
+[node name="Sprite2D" type="Sprite3D" parent="." unique_id=531351303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.87475634)
+texture_filter = 2
+texture = ExtResource("1_7bbap")
+
+[node name="Sprite3D" type="Sprite3D" parent="Sprite2D" unique_id=1871263629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.334826)
+
+[node name="Sprite3D2" type="Sprite3D" parent="Sprite2D" unique_id=123982721]
+
+[node name="Sprite3D3" type="Sprite3D" parent="Sprite2D" unique_id=1676959954]
+
+[node name="Sprite3D4" type="Sprite3D" parent="Sprite2D" unique_id=1295436145]
+
+[node name="Sprite3D5" type="Sprite3D" parent="Sprite2D" unique_id=1486495481]
+
+[node name="Sprite3D6" type="Sprite3D" parent="Sprite2D" unique_id=800507627]
+
+[node name="回樱花" type="Sprite3D" parent="." unique_id=777625676]
+transform = Transform3D(0.13, 0, 0, 0, 0.13, 0, 0, 0, 0.13, 0.07954766, 0, -0.13353387)
+texture_filter = 2
+texture = ExtResource("2_400fp")
+
+[node name="回樱花" type="Sprite3D" parent="回樱花" unique_id=2101031815]
+transform = Transform3D(0.9050002, 0, 0, 0, 0.9050002, 0, 0, 0, 0.9050002, -0.25692645, 0.08971577, -0.13353395)
+texture_filter = 2
+texture = ExtResource("2_400fp")
+
+[node name="回樱花2" type="Sprite3D" parent="回樱花" unique_id=1646836609]
+transform = Transform3D(0.90500027, 0, 0, 0, 0.90500027, 0, 0, 0, 0.90500027, -1.3312476, 0.08971577, -0.13353395)
+texture_filter = 2
+texture = ExtResource("2_400fp")
+
+[node name="回樱花3" type="Sprite3D" parent="回樱花" unique_id=229705661]
+transform = Transform3D(0.90500045, 0, 0, 0, 0.90500045, 0, 0, 0, 0.90500045, -0.45518264, 0.08290479, -0.054742932)
+texture_filter = 2
+texture = ExtResource("2_400fp")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1713185022]
