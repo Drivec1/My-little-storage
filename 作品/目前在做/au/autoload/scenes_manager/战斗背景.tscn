@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://ct0u8qq4mm08e"]
+
+[ext_resource type="Texture2D" uid="uid://ckenj2svj6nom" path="res://spr_asrielbg_0.png" id="1_tftm5"]
+
+[sub_resource type="VideoStreamTheora" id="VideoStreamTheora_ubxb5"]
+
+[node name="Control" type="Control" unique_id=1446420766]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="." unique_id=787711000]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+stream = SubResource("VideoStreamTheora_ubxb5")
+
+[node name="SprAsrielbg0" type="Sprite2D" parent="." unique_id=1439709926]
+position = Vector2(524, 379)
+texture = ExtResource("1_tftm5")
