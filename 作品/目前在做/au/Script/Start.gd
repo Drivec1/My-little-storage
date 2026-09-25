@@ -4,7 +4,7 @@ extends Control
 @onready var animation_player = $动画控制台
 
 # 你要跳转的目标场景路径
-var target_scene_path = "res://autoload/scenes_manager/scene_manager.tscn" 
+var target_scene_path = "res://autoload/scene_manager.tscn"
 # 目标解锁时间（秒）
 var can_jump_time: float = 2.4 
 # 记录当前经过的时间
