@@ -1,6 +1,5 @@
 [gd_scene format=4 uid="uid://cihf33nw53euu"]
 
-[ext_resource type="Texture2D" uid="uid://cj3jtp4f0uexv" path="res://textures/开始背景.svg" id="1_7obuc"]
 [ext_resource type="Texture2D" uid="uid://cpvnwyk6pldcv" path="res://textures/spr_flowey_riseanim_0-Sheet.png" id="2_wqkam"]
 [ext_resource type="Texture2D" uid="uid://dgskhf5ldxdek" path="res://textures/heart/spr_allsoul_0.png" id="3_44kwu"]
 [ext_resource type="Texture2D" uid="uid://ccf0qp4bghf46" path="res://textures/heart/spr_allsoul_1.png" id="4_0vn2b"]
@@ -17,8 +16,6 @@
 [ext_resource type="Script" uid="uid://dudv3s61jftn2" path="res://Script/旋转4.gd" id="12_auq0u"]
 [ext_resource type="Script" uid="uid://c4o6diryu70uo" path="res://Script/旋转5.gd" id="14_kemyd"]
 [ext_resource type="FontFile" uid="uid://bsrin35wg3hk5" path="res://fonts/MonsterFriendFore.otf" id="15_78iai"]
-[ext_resource type="Texture2D" uid="uid://ccgeky6efu2m" path="res://icon.svg" id="20_4urw0"]
-[ext_resource type="Script" uid="uid://d3g3fyxnfpocj" path="res://Script/上下移动.gd" id="21_qakh4"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ubxb5"]
 font = ExtResource("15_78iai")
@@ -149,21 +146,11 @@ loop = true
 [node name="根节点" type="Node2D" unique_id=1797779452]
 metadata/_edit_use_anchors_ = true
 
-[node name="左侧背景" type="TextureRect" parent="." unique_id=1846885960]
-texture_filter = 2
-offset_left = -8.0
-offset_top = -23.999998
-offset_right = 926.0
-offset_bottom = 520.0
-scale = Vector2(1.1303464, 0.94519717)
-mouse_filter = 2
-texture = ExtResource("1_7obuc")
-
 [node name="游玩字体" type="Label" parent="." unique_id=1156034214]
-offset_left = 77.0
-offset_top = 218.0
-offset_right = 206.0
-offset_bottom = 254.0
+offset_left = 25.0
+offset_top = 367.0
+offset_right = 154.0
+offset_bottom = 403.0
 text = "PLAY"
 label_settings = SubResource("LabelSettings_ubxb5")
 horizontal_alignment = 1
@@ -171,18 +158,18 @@ vertical_alignment = 1
 justification_flags = 161
 
 [node name="设置字体" type="Label" parent="." unique_id=2041230063]
-offset_left = 80.0
-offset_top = 164.0
-offset_right = 305.0
-offset_bottom = 194.0
-text = "seetings"
+offset_left = 24.0
+offset_top = 420.0
+offset_right = 291.0
+offset_bottom = 450.0
+text = "Difficulty"
 label_settings = SubResource("LabelSettings_ubxb5")
 horizontal_alignment = 1
 vertical_alignment = 1
 justification_flags = 161
 
 [node name="小花" type="AnimatedSprite2D" parent="." unique_id=1073901650]
-position = Vector2(488.99997, 287.9545)
+position = Vector2(491, 149)
 scale = Vector2(3.5448873, 3.5528774)
 sprite_frames = SubResource("SpriteFrames_ubxb5")
 animation = &"new_up"
@@ -228,9 +215,3 @@ stream = SubResource("AudioStreamMP3_2wg2s")
 autoplay = true
 mix_target = 1
 max_polyphony = 10
-
-[node name="决心" type="Sprite2D" parent="." unique_id=762386894]
-position = Vector2(50, 235)
-scale = Vector2(0.175, 0.175)
-texture = ExtResource("20_4urw0")
-script = ExtResource("21_qakh4")

@@ -32,25 +32,16 @@ script = ExtResource("1_rmivl")
 libraries/ = SubResource("AnimationLibrary_ef6vd")
 autoplay = &"RESET"
 
-[node name="闪光控制器" type="ColorRect" parent="." unique_id=1124911843]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.0859375
-anchor_top = -0.052083332
-anchor_right = 1.0842291
-anchor_bottom = 1.1180834
-offset_right = -108.90662
-offset_bottom = -81.67999
+[node name="闪光控制器" type="ColorRect" parent="动画控制台" unique_id=1124911843]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(1.1701666, 1.1701666)
 color = Color(1, 1, 1, 0)
 metadata/_edit_use_anchors_ = true
 
-[node name="背景音乐控制器" type="AudioStreamPlayer" parent="闪光控制器" unique_id=1676979110]
-stream = ExtResource("5_npkaw")
-
-[node name="Z键说明标签" type="Label" parent="." unique_id=671051676]
+[node name="Z键说明标签" type="Label" parent="动画控制台/闪光控制器" unique_id=671051676]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.67842853
@@ -58,9 +49,9 @@ anchor_top = 108.88476
 anchor_right = 1.2001679
 anchor_bottom = 109.2181
 offset_left = -271.19427
-offset_top = -51896.684
-offset_right = -271.19424
-offset_bottom = -51896.684
+offset_top = -51896.688
+offset_right = -271.19427
+offset_bottom = -51896.688
 grow_horizontal = 2
 grow_vertical = 0
 text = "[PRESS Z TO START]"
@@ -69,35 +60,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="复盖层1" type="ColorRect" parent="Z键说明标签" unique_id=1053623677]
-visible = false
+[node name="游戏主标题" type="RichTextLabel" parent="动画控制台/闪光控制器/Z键说明标签" unique_id=1993595894]
 show_behind_parent = true
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.39669427
-anchor_top = 0.18986732
-anchor_right = 0.4724452
-anchor_bottom = 0.53939235
-offset_left = -29.416443
-offset_top = -301.3095
-offset_right = -3.851532
-offset_bottom = -275.87488
-grow_vertical = 0
-scale = Vector2(0.31999996, 0.28)
-color = Color(0.92941177, 0.10980392, 0.14117648, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="游戏主标题" type="RichTextLabel" parent="Z键说明标签" unique_id=1993595894]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.3307289
-anchor_top = 1.8999562
-anchor_right = 0.7043038
-anchor_bottom = 1.6145483
-offset_left = -29.56527
-offset_top = -804.0004
-offset_right = -39.065292
-offset_bottom = -728.33405
+anchor_left = -0.41927075
+anchor_top = -1.9638898
+anchor_right = 1.3925768
+anchor_bottom = -1.627148
+offset_right = -268.88873
+offset_bottom = -23.880005
 grow_horizontal = 2
 grow_vertical = 0
 scale = Vector2(1.8, 1.796)
@@ -108,3 +80,23 @@ fit_content = true
 scroll_active = false
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
+
+[node name="复盖层1" type="ColorRect" parent="动画控制台/闪光控制器/Z键说明标签/游戏主标题" unique_id=1053623677]
+visible = false
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.39173573
+anchor_top = 0.17137985
+anchor_right = 0.4403155
+anchor_bottom = 0.52519643
+offset_right = 34.69742
+offset_bottom = 27.294422
+grow_vertical = 0
+scale = Vector2(0.31999996, 0.28)
+color = Color(0.92941177, 0.10980392, 0.14117648, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="背景音乐控制器" type="AudioStreamPlayer" parent="." unique_id=1676979110]
+stream = ExtResource("5_npkaw")
+autoplay = true
